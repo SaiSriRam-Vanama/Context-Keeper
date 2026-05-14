@@ -1,4 +1,4 @@
-# 🧠 Context Keeper — AI-Powered Codebase Intelligence
+# Context Keeper — AI-Powered Codebase Intelligence
 
 > **Understand any GitHub repository instantly.** Ask questions in plain English, explore architecture visually, and onboard contributors in minutes — powered by RAG (Retrieval-Augmented Generation) with local LLMs.
 
@@ -10,126 +10,126 @@
 
 ---
 
-## 📋 Table of Contents
+## Table of Contents
 
-- [✨ Features](#-features)
-- [🏗️ System Architecture](#️-system-architecture)
-- [⚙️ Tech Stack](#️-tech-stack)
-- [📁 Project Structure](#-project-structure)
-- [🚀 Getting Started](#-getting-started)
+- [Features](#features)
+- [System Architecture](#system-architecture)
+- [Tech Stack](#tech-stack)
+- [Project Structure](#project-structure)
+- [Getting Started](#getting-started)
   - [Prerequisites](#prerequisites)
   - [Quick Start (Local)](#quick-start-local)
   - [Docker Deployment](#docker-deployment)
-- [🔌 API Reference](#-api-reference)
-- [📊 Data Pipeline](#-data-pipeline)
-- [🛡️ Anti-Hallucination System](#️-anti-hallucination-system)
-- [🧪 Testing](#-testing)
-- [🤝 Contributing](#-contributing)
-- [📄 License](#-license)
-- [👤 Author](#-author)
+- [API Reference](#api-reference)
+- [Data Pipeline](#data-pipeline)
+- [Anti-Hallucination System](#anti-hallucination-system)
+- [Testing](#testing)
+- [Contributing](#contributing)
+- [License](#license)
+- [Author](#author)
 
 ---
 
-## ✨ Features
+## Features
 
 | Feature | Description |
 |---|---|
-| **🔍 RAG Q&A Chat** | Ask natural-language questions about any ingested repo. Answers are grounded strictly in the codebase — zero hallucinations. |
-| **🏛️ Architecture Visualizer** | Auto-generates interactive dependency graphs from source code imports using ReactFlow. |
-| **📈 Decision Timeline** | Monthly commit / issue / PR activity charts rendered with Recharts. |
-| **👥 Contributor Map** | Identifies top contributors and their areas of expertise. |
-| **🧭 Code Navigator** | Full file-tree browser for any ingested repository. |
-| **🚀 Smart Onboarding** | AI-generated 5-step onboarding plan for new contributors. |
-| **📂 File Viewer** | Read any file from an ingested repo directly in the browser. |
-| **⚡ Streaming Responses** | Real-time token-by-token answer streaming via SSE. |
-| **🔄 Ingestion Pipeline** | Clone → Process → Chunk → Embed → Store in under 2 minutes. |
+| **RAG Q&A Chat** | Ask natural-language questions about any ingested repo. Answers are grounded strictly in the codebase — zero hallucinations. |
+| **Architecture Visualizer** | Auto-generates interactive dependency graphs from source code imports using ReactFlow. |
+| **Decision Timeline** | Monthly commit / issue / PR activity charts rendered with Recharts. |
+| **Contributor Map** | Identifies top contributors and their areas of expertise. |
+| **Code Navigator** | Full file-tree browser for any ingested repository. |
+| **Smart Onboarding** | AI-generated 5-step onboarding plan for new contributors. |
+| **File Viewer** | Read any file from an ingested repo directly in the browser. |
+| **Streaming Responses** | Real-time token-by-token answer streaming via SSE. |
+| **Ingestion Pipeline** | Clone -> Process -> Chunk -> Embed -> Store in under 2 minutes. |
 
 ---
 
-## 🏗️ System Architecture
+## System Architecture
 
 ```
-┌─────────────────────────────────────────────────────────────────────┐
-│                        🌐 User (Browser)                            │
-└───────────────────────────┬─────────────────────────────────────────┘
-                            │
-                            ▼
-┌─────────────────────────────────────────────────────────────────────┐
-│                   🎨 Frontend (Next.js 16 + React 19)                │
-│                                                                     │
-│  ┌──────────────┐  ┌──────────────┐  ┌──────────────────────────┐  │
-│  │ ChatInterface │  │ Architecture │  │   TimelineVisualizer     │  │
-│  │  (RAG QA)     │  │   Diagram    │  │  (Recharts charts)      │  │
-│  └──────┬───────┘  └──────┬───────┘  └──────────┬───────────────┘  │
-│         │                  │                      │                  │
-│  ┌──────┴───────┐  ┌──────┴───────┐  ┌──────────┴───────────────┐  │
-│  │CodeNavigator │  │ContributorMap│  │   SmartOnboarding         │  │
-│  └──────┬───────┘  └──────────────┘  └──────────────────────────┘  │
-│         │                                                           │
-│         └──────────────┬────────────────────────────────────────────┘
-│                        │            HTTP / SSE
-│                        ▼
-│              ┌───────────────────┐
-│              │   api.ts (Axios)  │
-│              │  :3000 → :8000    │
-│              └───────────────────┘
-└───────────────────────────┬─────────────────────────────────────────┘
-                            │
-                     HTTP / SSE
-                            │
-                            ▼
-┌─────────────────────────────────────────────────────────────────────┐
-│              ⚙️ Backend (FastAPI + Uvicorn :8000)                    │
-│                                                                     │
-│  ┌──────────────────────────────────────────────────────────────┐   │
-│  │                     routes.py (API Router)                     │   │
-│  │  /health  /ingest-repo  /ask  /ask/stream  /timeline          │   │
-│  │  /contributors  /architecture  /tree  /file  /onboarding      │   │
-│  │  /repos  /repos/{id}  /ingestion-status                       │   │
-│  └───────────┬──────────────────┬──────────────────┬─────────────┘   │
-│              │                  │                  │                 │
-│              ▼                  ▼                  ▼                 │
-│  ┌──────────────┐   ┌──────────────┐   ┌──────────────────────┐    │
-│  │ llm_service  │   │  db_service  │   │  ingestion_service    │    │
-│  │ (Ollama)     │   │ (ChromaDB)   │   │ (Git + GitHub API)    │    │
-│  └──────┬───────┘   └──────┬───────┘   └──────────┬───────────┘    │
-│         │                  │                       │                │
-│         ▼                  ▼                       ▼                │
-│  ┌────────────┐   ┌──────────────┐   ┌─────────────────────────┐   │
-│  │embedding   │   │ processor    │   │   GitPython / PyGithub  │   │
-│  │_service    │   │ _service     │   │   (clone, issues, PRs)  │   │
-│  └────────────┘   └──────────────┘   └─────────────────────────┘   │
-└───────────────────────────┬─────────────────────────────────────────┘
-                            │
-              ┌─────────────┴─────────────┐
-              │                           │
-              ▼                           ▼
-┌─────────────────────┐   ┌─────────────────────────────┐
-│  🤖 Ollama Server   │   │  🗄️ ChromaDB (Persistent)    │
-│  (phi3:mini)        │   │  (cosine similarity index)  │
-│  Port 11434         │   │  chroma_data/               │
-└─────────────────────┘   └─────────────────────────────┘
++-----------------------------------------------------------------------+
+|                         User (Browser)                                 |
++-----------------------------+-----------------------------------------+
+                              |
+                              v
++-----------------------------------------------------------------------+
+|                    Frontend (Next.js 16 + React 19)                     |
+|                                                                        |
+|  +--------------+  +--------------+  +----------------------------+    |
+|  | ChatInterface|  | Architecture |  |   TimelineVisualizer       |    |
+|  |  (RAG QA)    |  |   Diagram    |  |  (Recharts charts)        |    |
+|  +------+-------+  +------+-------+  +------------+--------------+    |
+|         |                  |                       |                   |
+|  +------+-------+  +------+-------+  +------------+--------------+    |
+|  |CodeNavigator |  |ContributorMap|  |   SmartOnboarding           |    |
+|  +------+-------+  +--------------+  +----------------------------+    |
+|         |                                                              |
+|         +----------------+---------------------------------------------+
+|                          |            HTTP / SSE
+|                          v
+|                +-------------------+
+|                |   api.ts (Axios)  |
+|                |  :3000 -> :8000   |
+|                +-------------------+
++-----------------------------+-----------------------------------------+
+                              |
+                       HTTP / SSE
+                              |
+                              v
++-----------------------------------------------------------------------+
+|              Backend (FastAPI + Uvicorn :8000)                         |
+|                                                                        |
+|  +----------------------------------------------------------------+   |
+|  |                     routes.py (API Router)                       |   |
+|  |  /health  /ingest-repo  /ask  /ask/stream  /timeline            |   |
+|  |  /contributors  /architecture  /tree  /file  /onboarding        |   |
+|  |  /repos  /repos/{id}  /ingestion-status                         |   |
+|  +-------------+------------------+------------------+-------------+   |
+|                |                  |                  |                 |
+|                v                  v                  v                 |
+|  +--------------+   +--------------+   +------------------------+    |
+|  | llm_service  |   |  db_service  |   |  ingestion_service      |    |
+|  | (Ollama)     |   | (ChromaDB)   |   | (Git + GitHub API)      |    |
+|  +------+-------+   +------+-------+   +------------+-----------+    |
+|         |                  |                         |                |
+|         v                  v                         v                |
+|  +--------------+   +--------------+   +---------------------------+ |
+|  |embedding     |   | processor    |   |   GitPython / PyGithub    | |
+|  |_service      |   | _service     |   |   (clone, issues, PRs)    | |
+|  +--------------+   +--------------+   +---------------------------+ |
++-----------------------------+-----------------------------------------+
+                              |
+                +-------------+-------------+
+                |                           |
+                v                           v
++---------------------------+   +-------------------------------+
+|    Ollama Server          |   |  ChromaDB (Persistent)        |
+|    (phi3:mini)            |   |  (cosine similarity index)    |
+|    Port 11434             |   |  chroma_data/                 |
++---------------------------+   +-------------------------------+
 ```
 
 ### Data Flow
 
-#### 📥 Ingestion Pipeline
+#### Ingestion Pipeline
 ```
-GitHub Repo → Clone → Process Files → Chunk Text → Generate Embeddings → Store in ChromaDB
-                   ↘ Extract Timeline / Contributors / Architecture → Cache as JSON
+GitHub Repo -> Clone -> Process Files -> Chunk Text -> Generate Embeddings -> Store in ChromaDB
+                    -> Extract Timeline / Contributors / Architecture -> Cache as JSON
 ```
 
-#### 🔍 Q&A Pipeline
+#### Q&A Pipeline
 ```
-User Query → Embed Query → ChromaDB Retrieval (top-N chunks → dedup per file)
-         → Build Strict Prompt → Ollama Inference → Hallucination Check → Answer
+User Query -> Embed Query -> ChromaDB Retrieval (top-N chunks -> dedup per file)
+         -> Build Strict Prompt -> Ollama Inference -> Hallucination Check -> Answer
 ```
 
 ---
 
-## ⚙️ Tech Stack
+## Tech Stack
 
-### 🖥️ Backend
+### Backend
 
 | Category | Technology | Purpose |
 |---|---|---|
@@ -138,14 +138,14 @@ User Query → Embed Query → ChromaDB Retrieval (top-N chunks → dedup per fi
 | **LLM Runtime** | [Ollama](https://ollama.ai/) + phi3:mini | Local LLM inference |
 | **Vector DB** | [ChromaDB](https://www.trychroma.com/) 1.5.5 | Persistent vector storage (cosine similarity) |
 | **Embeddings** | [Sentence-Transformers](https://www.sbert.net/) (all-MiniLM-L6-v2) | Text embeddings |
-| **Git** | [GitPython](https://gitpython.readthedocs.io/) 3.1.46 | Repository cloning & analysis |
-| **GitHub API** | [PyGithub](https://pygithub.readthedocs.io/) 2.8.1 | Issues & PRs fetching |
+| **Git** | [GitPython](https://gitpython.readthedocs.io/) 3.1.46 | Repository cloning and analysis |
+| **GitHub API** | [PyGithub](https://pygithub.readthedocs.io/) 2.8.1 | Issues and PRs fetching |
 | **ML Backend** | [PyTorch](https://pytorch.org/) 2.10 | Embedding model runtime |
-| **Validation** | [Pydantic](https://docs.pydantic.dev/) 2.12 | Data models & validation |
+| **Validation** | [Pydantic](https://docs.pydantic.dev/) 2.12 | Data models and validation |
 | **HTTP Client** | [httpx](https://www.python-httpx.org/) 0.28 + [requests](https://requests.readthedocs.io/) 2.32 | API communication |
-| **Testing** | [pytest](https://docs.pytest.org/) 9.0 | Unit & integration tests |
+| **Testing** | [pytest](https://docs.pytest.org/) 9.0 | Unit and integration tests |
 
-### 🎨 Frontend
+### Frontend
 
 | Category | Technology | Purpose |
 |---|---|---|
@@ -159,7 +159,7 @@ User Query → Embed Query → ChromaDB Retrieval (top-N chunks → dedup per fi
 | **HTTP** | [Axios](https://axios-http.com/) 1.13 | API client |
 | **Linting** | [ESLint](https://eslint.org/) 9 | Code quality |
 
-### 🐳 Infrastructure
+### Infrastructure
 
 | Component | Technology |
 |---|---|
@@ -170,76 +170,76 @@ User Query → Embed Query → ChromaDB Retrieval (top-N chunks → dedup per fi
 
 ---
 
-## 📁 Project Structure
+## Project Structure
 
 ```
 Context-Keeper/
-│
-├── backend/                          # 🐍 Python FastAPI Backend
-│   ├── api/
-│   │   └── routes.py                 # All API endpoints
-│   ├── services/
-│   │   ├── llm_service.py            # Ollama integration + hallucination guard
-│   │   ├── embedding_service.py      # Sentence-Transformer embeddings
-│   │   ├── db_service.py             # ChromaDB operations
-│   │   ├── processor_service.py      # File processing & chunking
-│   │   └── ingestion_service.py      # Git clone + metadata extraction
-│   ├── tests/
-│   │   ├── test_processor.py         # Chunking logic tests
-│   │   ├── test_routes.py            # API route tests
-│   │   ├── test_db.py                # ChromaDB dedup tests
-│   │   ├── test_ingestion.py         # Ingestion status tests
-│   │   └── test_e2e_ask.py           # End-to-end Q&A tests
-│   ├── chroma_data/                  # Persistent vector store
-│   ├── repos/                        # Cloned repositories
-│   ├── config.py                     # Settings from environment
-│   ├── main.py                       # FastAPI app entry point
-│   ├── requirements.txt              # Python dependencies
-│   ├── Dockerfile                    # Backend container
-│   ├── .env.example                  # Environment template
-│   ├── start.bat / start.vbs         # Windows launchers
-│   └── start_server.ps1             # PowerShell launcher
-│
-├── frontend/                         # 🎨 Next.js 16 Frontend
-│   ├── src/
-│   │   ├── app/
-│   │   │   ├── page.tsx              # Landing page
-│   │   │   ├── layout.tsx            # Root layout
-│   │   │   ├── dashboard/page.tsx    # Main dashboard
-│   │   │   └── ingest/page.tsx       # Repo ingestion page
-│   │   ├── components/
-│   │   │   ├── ChatInterface.tsx      # RAG Q&A chat panel
-│   │   │   ├── ArchitectureDiagram.tsx # Interactive dependency graph
-│   │   │   ├── TimelineVisualizer.tsx  # Activity charts
-│   │   │   ├── ContributorMap.tsx      # Contributor analysis
-│   │   │   ├── CodeNavigator.tsx       # File tree browser
-│   │   │   ├── SmartOnboarding.tsx     # AI onboarding steps
-│   │   │   ├── IngestionProgress.tsx   # Progress bar
-│   │   │   ├── ErrorBoundary.tsx       # Error fallback UI
-│   │   │   └── ToastContainer.tsx      # Toast notifications
-│   │   └── lib/
-│   │       ├── api.ts                 # Axios API client
-│   │       ├── utils.ts               # Tailwind utilities
-│   │       └── use-toast.ts           # Toast hook
-│   ├── package.json                   # Node dependencies
-│   ├── Dockerfile                    # Frontend container
-│   ├── next.config.ts                # Next.js configuration
-│   ├── tsconfig.json                 # TypeScript config
-│   └── .env.example                  # Environment template
-│
-├── scratch/
-│   └── test_ollama.py                # Ollama connectivity test
-│
-├── docker-compose.yml                # Multi-container orchestration
-├── run.ps1                           # Unified project launcher
-├── start_servers.ps1                 # Quick server start
-├── pytest.ini                        # Test configuration
-└── README.md                         # 📄 This file
+|
++-- backend/                          # Python FastAPI Backend
+|   +-- api/
+|   |   +-- routes.py                 # All API endpoints
+|   +-- services/
+|   |   +-- llm_service.py            # Ollama integration + hallucination guard
+|   |   +-- embedding_service.py      # Sentence-Transformer embeddings
+|   |   +-- db_service.py             # ChromaDB operations
+|   |   +-- processor_service.py      # File processing and chunking
+|   |   +-- ingestion_service.py      # Git clone + metadata extraction
+|   +-- tests/
+|   |   +-- test_processor.py         # Chunking logic tests
+|   |   +-- test_routes.py            # API route tests
+|   |   +-- test_db.py                # ChromaDB dedup tests
+|   |   +-- test_ingestion.py         # Ingestion status tests
+|   |   +-- test_e2e_ask.py           # End-to-end Q&A tests
+|   +-- chroma_data/                  # Persistent vector store
+|   +-- repos/                        # Cloned repositories
+|   +-- config.py                     # Settings from environment
+|   +-- main.py                       # FastAPI app entry point
+|   +-- requirements.txt              # Python dependencies
+|   +-- Dockerfile                    # Backend container
+|   +-- .env.example                  # Environment template
+|   +-- start.bat / start.vbs         # Windows launchers
+|   +-- start_server.ps1             # PowerShell launcher
+|
++-- frontend/                         # Next.js 16 Frontend
+|   +-- src/
+|   |   +-- app/
+|   |   |   +-- page.tsx              # Landing page
+|   |   |   +-- layout.tsx            # Root layout
+|   |   |   +-- dashboard/page.tsx    # Main dashboard
+|   |   |   +-- ingest/page.tsx       # Repo ingestion page
+|   |   +-- components/
+|   |   |   +-- ChatInterface.tsx      # RAG Q&A chat panel
+|   |   |   +-- ArchitectureDiagram.tsx # Interactive dependency graph
+|   |   |   +-- TimelineVisualizer.tsx  # Activity charts
+|   |   |   +-- ContributorMap.tsx      # Contributor analysis
+|   |   |   +-- CodeNavigator.tsx       # File tree browser
+|   |   |   +-- SmartOnboarding.tsx     # AI onboarding steps
+|   |   |   +-- IngestionProgress.tsx   # Progress bar
+|   |   |   +-- ErrorBoundary.tsx       # Error fallback UI
+|   |   |   +-- ToastContainer.tsx      # Toast notifications
+|   |   +-- lib/
+|   |       +-- api.ts                 # Axios API client
+|   |       +-- utils.ts               # Tailwind utilities
+|   |       +-- use-toast.ts           # Toast hook
+|   +-- package.json                   # Node dependencies
+|   +-- Dockerfile                    # Frontend container
+|   +-- next.config.ts                # Next.js configuration
+|   +-- tsconfig.json                 # TypeScript config
+|   +-- .env.example                  # Environment template
+|
++-- scratch/
+|   +-- test_ollama.py                # Ollama connectivity test
+|
++-- docker-compose.yml                # Multi-container orchestration
++-- run.ps1                           # Unified project launcher
++-- start_servers.ps1                 # Quick server start
++-- pytest.ini                        # Test configuration
++-- README.md                         # This file
 ```
 
 ---
 
-## 🚀 Getting Started
+## Getting Started
 
 ### Prerequisites
 
@@ -252,7 +252,7 @@ Context-Keeper/
 
 ### Quick Start (Local)
 
-**1. Clone & Setup Environment**
+**1. Clone and Setup Environment**
 ```bash
 git clone https://github.com/SaiSriRam-Vanama/Context-Keeper.git
 cd Context-Keeper
@@ -272,14 +272,14 @@ ollama pull phi3:mini
 **3. Configure Environment**
 ```bash
 cp backend/.env.example backend/.env
-# Edit backend/.env — set GITHUB_TOKEN for higher API rate limits (optional)
+# Edit backend/.env -- set GITHUB_TOKEN for higher API rate limits (optional)
 ```
 
 **4. Run Backend**
 ```bash
 cd backend
 python main.py
-# → http://localhost:8000
+# -> http://localhost:8000
 ```
 
 **5. Run Frontend** (new terminal)
@@ -287,7 +287,7 @@ python main.py
 cd frontend
 npm install
 npm run dev
-# → http://localhost:3000
+# -> http://localhost:3000
 ```
 
 **6. Or use the unified launcher:**
@@ -299,22 +299,22 @@ npm run dev
 
 ```bash
 docker compose up --build
-# → Backend: http://localhost:8000
-# → Frontend: http://localhost:3000
-# → Ollama:   http://localhost:11434
+# -> Backend: http://localhost:8000
+# -> Frontend: http://localhost:3000
+# -> Ollama:   http://localhost:11434
 ```
 
-> ⚠️ First run will download the `phi3:mini` model (~2.4 GB) inside the Ollama container.
+**Note:** First run will download the `phi3:mini` model (~2.4 GB) inside the Ollama container.
 
 ---
 
-## 🔌 API Reference
+## API Reference
 
 ### System
 
 | Method | Endpoint | Description |
 |---|---|---|
-| `GET` | `/health` | System health — Ollama status, ChromaDB doc count, config |
+| `GET` | `/health` | System health -- Ollama status, ChromaDB doc count, config |
 
 ### Ingestion
 
@@ -345,17 +345,17 @@ docker compose up --build
 
 ---
 
-## 📊 Data Pipeline
+## Data Pipeline
 
 ### Ingestion Flow
 ```
-1. Clone ──── GitPython clones repo into backend/repos/
-2. Process ── Scan supported files (.py, .js, .ts, .md, etc.)
-3. Chunk ──── Section-aware splitting (markdown headers → fixed-size with overlap)
-4. Filter ─── Remove license boilerplate and low-value chunks
-5. Embed ──── Sentence-Transformer all-MiniLM-L6-v2 → 384-dim vectors
-6. Store ──── ChromaDB (cosine similarity, persistent on disk)
-7. Extract ── Timeline (commits + issues), Contributors, Architecture → JSON cache
+1. Clone ----- GitPython clones repo into backend/repos/
+2. Process --- Scan supported files (.py, .js, .ts, .md, etc.)
+3. Chunk ----- Section-aware splitting (markdown headers -> fixed-size with overlap)
+4. Filter ---- Remove license boilerplate and low-value chunks
+5. Embed ----- Sentence-Transformer all-MiniLM-L6-v2 -> 384-dim vectors
+6. Store ----- ChromaDB (cosine similarity, persistent on disk)
+7. Extract --- Timeline (commits + issues), Contributors, Architecture -> JSON cache
 ```
 
 ### Q&A Flow
@@ -371,7 +371,7 @@ docker compose up --build
 
 ---
 
-## 🛡️ Anti-Hallucination System
+## Anti-Hallucination System
 
 Context Keeper uses a **three-layer defense** against LLM hallucinations:
 
@@ -386,16 +386,16 @@ Context Keeper uses a **three-layer defense** against LLM hallucinations:
 ```
 
 ### Layer 2: Context Restriction
-- Only **200 characters per chunk** — minimal viable context
-- **1 chunk per file** — prevents information overload
-- **n_results=1** (deduplicated) — maximum focus
+- Only **200 characters per chunk** -- minimal viable context
+- **1 chunk per file** -- prevents information overload
+- **n_results=1** (deduplicated) -- maximum focus
 
 ### Layer 3: Tech-Term Blacklist
 After generation, the answer is scanned for 70+ known technology terms. If any term appears in the answer that was **not present in the original context**, the answer is replaced with `"I don't have enough information about this."`.
 
 ---
 
-## 🧪 Testing
+## Testing
 
 ```bash
 # Run all tests
@@ -421,7 +421,7 @@ pytest --cov=backend/services --cov-report=term-missing
 
 ---
 
-## 🤝 Contributing
+## Contributing
 
 1. Fork the repository
 2. Create a feature branch (`git checkout -b feature/amazing-feature`)
@@ -433,9 +433,9 @@ Please ensure your code passes all existing tests and follows the project's codi
 
 ---
 
-## 📄 License
+## License
 
-This project is licensed under the **MIT License** — see the [LICENSE](LICENSE) file for details.
+This project is licensed under the **MIT License** -- see the [LICENSE](LICENSE) file for details.
 
 ```
 MIT License
@@ -463,7 +463,7 @@ SOFTWARE.
 
 ---
 
-## 👤 Author
+## Author
 
 **VANAMA SAI SRI RAM**
 
@@ -472,4 +472,4 @@ SOFTWARE.
 
 ---
 
-> ⚡ **Context Keeper** — Because understanding code shouldn't require reading every line.
+> **Context Keeper** -- Because understanding code shouldn't require reading every line.
