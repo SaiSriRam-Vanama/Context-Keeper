@@ -1,0 +1,11 @@
+fastapi
+uvicorn
+gitpython
+PyGithub
+chromadb
+sentence-transformers
+transformers
+ollama
+pydantic
+python-dotenv
+requests

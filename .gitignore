@@ -1,0 +1,52 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+.venv*/
+venv/
+*.egg
+
+# Environment
+.env
+backend/.env
+frontend/.env
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS
+Thumbs.db
+.DS_Store
+
+# Logs
+*.log
+backend_start.err.log
+backend_start.out.log
+backend/be_out*.txt
+backend/be_err*.txt
+frontend/frontend_log.txt
+
+# ChromaDB (vector DB data - can be regenerated)
+backend/chroma_data/
+
+# Cloned repos (can be re-cloned)
+backend/repos/
+
+# Node
+node_modules/
+.next/
+tsconfig.tsbuildinfo
+
+# Docker
+.dockerignore
+
+# Scratch
+scratch/
+
+# VBS launchers (optional - keep or remove)
+# backend/start.vbs
+# frontend/start.vbs
